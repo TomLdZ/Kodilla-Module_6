@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 
-class Data_base:
+class DataBase: 
    def __init__(self):
       pass
 
@@ -87,9 +87,8 @@ class Data_base:
         :param country:
         :return: country id
         """
-        sql = '''INSERT INTO country(country_id, country)
-                    VALUES(?,?)'''
-        # próbowałem podawać tylko country z jednym ? w nawiasie, ale wtedy rozbija mi napis na znaki i wyskakuje błąd, że podaję za dużo argumentów
+        sql = '''INSERT INTO country(country)
+                    VALUES(?)'''
         cur = conn.cursor()
         cur.executemany(sql, country)
         conn.commit()
@@ -144,7 +143,7 @@ class Data_base:
 
         sql = f''' UPDATE {table}
                     SET {parameters}
-                    WHERE id = ?'''
+                    WHERE {table}_id = ?'''
         try:
             cur = conn.cursor()
             cur.execute(sql, values)
@@ -252,46 +251,53 @@ if __name__ == "__main__":
               ("Myingyan", 4),
               ("Nantou", 5)]
     
-    countries = [(1, "Japan"), (2, "United States"), (3, "Greece"), (4, "Myanmar"), (5, "Taiwan")]
-    # żeby obejść problemy podałem id z ręki
+    countries = [("Japan",), ("United States",), ("Greece",), ("Myanmar",), ("Taiwan",)]
+    
 
     db_file = "database.db"
 
-    conn = Data_base.create_connection(db_file)
+    conn = DataBase.create_connection(db_file)
 
     if conn is not None:
 
-        Data_base.execute_sql(conn, create_country_sql)
-        Data_base.execute_sql(conn, create_city_sql)
-        Data_base.execute_sql(conn, create_address_sql)
-        Data_base.execute_sql(conn, create_customer_sql)
+        DataBase.execute_sql(conn, create_country_sql)
+        DataBase.execute_sql(conn, create_city_sql)
+        DataBase.execute_sql(conn, create_address_sql)
+        DataBase.execute_sql(conn, create_customer_sql)
        
         
-        Data_base.add_customer(conn, customers)
-        Data_base.add_address(conn, addresses)
-        Data_base.add_city(conn, cities)
-        Data_base.add_country(conn, countries)
+        DataBase.add_customer(conn, customers)
+        DataBase.add_address(conn, addresses)
+        DataBase.add_city(conn, cities)
+        DataBase.add_country(conn, countries)
         
 
-        for row in Data_base.select_all(conn, "customer"):
+        for row in DataBase.select_all(conn, "customer"):
             print(row)
         
-        for row in Data_base.select_all(conn, "address"):
+        for row in DataBase.select_all(conn, "address"):
             print(row)
         
-        for row in Data_base.select_all(conn, "city"):
+        for row in DataBase.select_all(conn, "city"):
             print(row)
         
-        for row in Data_base.select_all(conn, "country"):
+        for row in DataBase.select_all(conn, "country"):
             print(row)
         
-        print(Data_base.select_where(conn, "city", city_id=2))
+        print(DataBase.select_where(conn, "city", city_id=2))
 
-        Data_base.update(conn, "customer", 1, first_name="Maria") # nie wiem czemu update nie działa
+        DataBase.update(conn, "customer", 1, first_name="Maria") 
 
-        print(Data_base.select_where(conn, "customer", customer_id=1))
+        print(DataBase.select_where(conn, "customer", customer_id=1))
 
-        Data_base.delete_where(conn, "customer", customer_id=5)
+        DataBase.delete_where(conn, "customer", customer_id=5)
 
-        for row in Data_base.select_all(conn, "customer"):
-            print(row)
+        for row in DataBase.select_all(conn, "customer"):
+             print(row)
+
+        DataBase.delete_all(conn, "customer")
+
+        for row in DataBase.select_all(conn, "customer"):
+             print(row)
+
+        
